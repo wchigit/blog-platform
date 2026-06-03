@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Platform</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+<div th:replace="~{layout :: site-header}"></div>
+<main class="container page-content">
+    <section class="hero">
+        <div>
+            <p class="eyebrow">Latest writing</p>
+            <h1>Thoughtful posts from the engineering desk.</h1>
+            <p>Browse recent posts, explore tags, and jump into the discussion.</p>
+        </div>
+        <a class="button" th:href="@{/posts/new}">Create a Post</a>
+    </section>
+
+    <div th:if="${posts.isEmpty()}" class="empty-state">
+        <h2>No posts yet</h2>
+        <p>Be the first author to publish something.</p>
+    </div>
+
+    <section class="post-grid" th:if="${!posts.isEmpty()}">
+        <article class="card post-card" th:each="post : ${posts}">
+            <div class="post-card-meta">
+                <span th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy')}">Jan 1, 2024</span>
+                <span>•</span>
+                <a th:href="@{/users/{id}(id=${post.author.id})}"
+                   th:text="${post.author.displayName != null and !post.author.displayName.isBlank() ? post.author.displayName : post.author.username}">Author</a>
+            </div>
+            <h2><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">Post title</a></h2>
+            <p class="post-summary" th:text="${post.summary}">Post summary</p>
+            <div class="tag-list">
+                <span class="tag" th:each="tag : ${post.tags}" th:text="${tag.name}">Tag</span>
+            </div>
+        </article>
+    </section>
+</main>
+<div th:replace="~{layout :: site-footer}"></div>
+</body>
+</html>

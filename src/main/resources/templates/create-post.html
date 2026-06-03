@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post | Blog Platform</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+<div th:replace="~{layout :: site-header}"></div>
+<main class="container page-content narrow">
+    <section class="card form-card">
+        <p class="eyebrow">Compose</p>
+        <h1>Write a new blog post</h1>
+        <p>Choose an author, add tags, and publish immediately or keep the post as a draft.</p>
+
+        <form th:action="@{/posts}" method="post" class="stacked-form">
+            <label for="title">Title</label>
+            <input id="title" name="title" type="text" maxlength="200" required>
+
+            <label for="summary">Summary</label>
+            <textarea id="summary" name="summary" rows="3" maxlength="500" placeholder="Brief overview for the post listing..."></textarea>
+
+            <label for="content">Content</label>
+            <textarea id="content" name="content" rows="14" placeholder="Write your article here..." required></textarea>
+
+            <label for="authorId">Author</label>
+            <select id="authorId" name="authorId" required>
+                <option value="" disabled selected>Select an author</option>
+                <option th:each="user : ${users}"
+                        th:value="${user.id}"
+                        th:text="${user.displayName != null and !user.displayName.isBlank() ? user.displayName : user.username}">User</option>
+            </select>
+
+            <label for="tagIds">Tags</label>
+            <select id="tagIds" name="tagIds" multiple size="5">
+                <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}">Tag</option>
+            </select>
+            <p class="help-text">Hold Ctrl (or Command on macOS) to pick multiple tags.</p>
+
+            <label class="checkbox-row" for="published">
+                <input id="published" name="published" type="checkbox" value="true">
+                <span>Publish immediately</span>
+            </label>
+
+            <button class="button" type="submit">Save Post</button>
+        </form>
+    </section>
+</main>
+<div th:replace="~{layout :: site-footer}"></div>
+</body>
+</html>

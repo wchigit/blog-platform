@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|${post.title} | Blog Platform|">Post Detail</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+<div th:replace="~{layout :: site-header}"></div>
+<main class="container page-content">
+    <article class="card detail-card">
+        <p class="eyebrow">Post</p>
+        <h1 th:text="${post.title}">Post title</h1>
+        <div class="post-card-meta detail-meta">
+            <span th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy h:mm a')}">Jan 1, 2024</span>
+            <span>•</span>
+            <a th:href="@{/users/{id}(id=${post.author.id})}"
+               th:text="${post.author.displayName != null and !post.author.displayName.isBlank() ? post.author.displayName : post.author.username}">Author</a>
+        </div>
+        <p class="post-summary" th:if="${post.summary != null and !post.summary.isBlank()}" th:text="${post.summary}"></p>
+        <div class="tag-list">
+            <span class="tag" th:each="tag : ${post.tags}" th:text="${tag.name}">Tag</span>
+        </div>
+        <div class="post-body" th:text="${post.content}">Post body</div>
+    </article>
+
+    <section class="card comments-card">
+        <div class="section-header">
+            <h2>Comments</h2>
+            <span class="badge" th:text="${#lists.size(post.comments)} + ' total'">0 total</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(post.comments)}" class="empty-state compact">
+            <p>No comments yet. Start the conversation below.</p>
+        </div>
+
+        <div class="comment-list" th:if="${!#lists.isEmpty(post.comments)}">
+            <article class="comment" th:each="comment : ${post.comments}">
+                <div class="comment-meta">
+                    <strong th:text="${comment.author.displayName != null and !comment.author.displayName.isBlank() ? comment.author.displayName : comment.author.username}">Commenter</strong>
+                    <span th:text="${#temporals.format(comment.createdAt, 'MMM d, yyyy h:mm a')}">Jan 1</span>
+                </div>
+                <p th:text="${comment.content}">Comment body</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="card form-card">
+        <h2>Add a Comment</h2>
+        <div th:if="${message}" class="flash-message" th:text="${message}">Saved</div>
+        <form th:action="@{/posts/{id}/comments(id=${post.id})}" method="post" class="stacked-form">
+            <label for="authorId">Author</label>
+            <select id="authorId" name="authorId" required>
+                <option value="" disabled selected>Select a commenter</option>
+                <option th:each="user : ${users}"
+                        th:value="${user.id}"
+                        th:text="${user.displayName != null and !user.displayName.isBlank() ? user.displayName : user.username}">User</option>
+            </select>
+
+            <label for="content">Comment</label>
+            <textarea id="content" name="content" rows="5" placeholder="Share your thoughts..." required></textarea>
+
+            <button class="button" type="submit">Post Comment</button>
+        </form>
+    </section>
+</main>
+<div th:replace="~{layout :: site-footer}"></div>
+</body>
+</html>
